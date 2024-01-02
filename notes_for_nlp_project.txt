@@ -1,0 +1,944 @@
+
+# OVO SU BILJESKE S CHATGPT-A, OBJASNJEN JE KOD LINIJU PO LINIJU
+# AKO NEKOGA ZANIMA STA SE RADI IMA OVDJE SVE
+
+
+
+
+
+
+
+dataset_text = (dataset['Tweet']).to_list()
+    dataset['Tweet']: This retrieves the column named 'Tweet' from the DataFrame dataset. Assuming dataset is a pandas DataFrame, this expression selects the entire column labeled 'Tweet'.
+
+    (dataset['Tweet']).to_list(): This converts the selected column ('Tweet') to a Python list using the to_list() method. The resulting list, dataset_text, will contain all the values from the 'Tweet' column in the original order.
+
+    print(dataset_text): This prints the list of text data stored in the dataset_text variable. It essentially shows the content of the 'Tweet' column in the form of a list.
+	
+	-----------------------------------------------------------------------------
+	raw_dataset_text = "".join(dataset_text[:314])
+
+    dataset_text[:314]: This part slices the list dataset_text up to the 314th element (exclusive). It takes the first 314 items from the list.
+
+    "".join(dataset_text[:314]): This joins the sliced list of strings into a single string. The empty string "" is used as a separator, meaning each element from the sliced list will be concatenated with no characters in between.
+
+    raw_dataset_text: This assigns the result of the string concatenation to the variable raw_dataset_text. Now, raw_dataset_text contains the concatenated text from the 'Tweet' column up to the 314th entry.
+	
+	-----------------------------------------------------------------------------
+	words = raw_dataset_text.split(" ")
+
+    raw_dataset_text: This is the variable that presumably contains a string of text. In your previous example, raw_dataset_text was created by joining the first 314 entries from the 'Tweet' column of the DataFrame into a single string.
+
+    .split(" "): This method is called on the string raw_dataset_text. It splits the string into a list of substrings based on the specified separator, which, in this case, is a space " ". This means that the string will be split at each space character.
+
+    words: This line assigns the resulting list of substrings (words) to the variable words. After this line, words contains a list where each element is a word from the original string.
+
+    print(words): This line prints the list of words to the console. It's a way to inspect the individual words extracted from the original string.
+	
+	-------------------------------------------------------------------------------
+	import pandas as pd
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+
+    import pandas as pd: Imports the pandas library and aliases it as pd. Pandas is commonly used for data manipulation and analysis.
+
+    import nltk: Imports the Natural Language Toolkit (nltk), a powerful library for working with human language data.
+
+    from nltk.corpus import stopwords: Imports the stopwords corpus from nltk, which contains common words (e.g., "the," "and," "is") that are often removed in natural language processing tasks.
+
+    from nltk.tokenize import word_tokenize: Imports the word_tokenize function from nltk, which is used to break text into words.
+	
+	
+	nltk.download("stopwords")
+nltk.download("punkt")
+
+    nltk.download("stopwords"): Downloads the stopwords dataset. This is necessary to use the stopwords later in the code.
+
+    nltk.download("punkt"): Downloads the Punkt dataset, which is used for tokenization.
+	
+	# Read CSV file
+file_path = 'C:/Users/Anes/Downloads/REF TWEETS.csv'
+df = pd.read_csv(file_path)
+
+    file_path = 'C:/Users/Anes/Downloads/REF TWEETS.csv': Specifies the path to the CSV file containing the data.
+
+    df = pd.read_csv(file_path): Reads the CSV file into a pandas DataFrame (df). The DataFrame is a tabular data structure commonly used in pandas.
+	
+	# Combine all text in the 'column_name' column (replace 'column_name' with the actual column name containing your text)
+all_text = ' '.join(df['Tweet'].astype(str).tolist())
+
+all_text = ' '.join(df['Tweet'].astype(str).tolist()): Combines all the text from the 'Tweet' column into a single string (all_text). The .astype(str).tolist() is used to convert the column to a list of strings.
+
+# Tokenize the text into words
+words = word_tokenize(all_text)
+
+words = word_tokenize(all_text): Tokenizes the combined text into a list of words using the word_tokenize function from nltk.
+
+sw = set(stopwords.words('english'))
+stopwords_removed = [word.lower() for word in words if word.lower() not in sw]
+
+    sw = set(stopwords.words('english')): Creates a set (sw) containing English stopwords.
+
+    stopwords_removed = [word.lower() for word in words if word.lower() not in sw]: Removes stopwords from the list of words, converts each word to lowercase, and stores the result in stopwords_removed.
+	
+	print("Original words count:", len(words))
+print("Stopwords removed count:", len(stopwords_removed))
+
+    print("Original words count:", len(words)): Prints the count of original words before removing stopwords.
+
+    print("Stopwords removed count:", len(stopwords_removed)): Prints the count of words after removing stopwords.
+	
+	print("Stopwords removed:", [word for word in words if word.lower() in sw])
+
+print("Stopwords removed:", [word for word in words if word.lower() in sw]): Prints the list of stopwords that were removed from the original list of words.
+
+freq = nltk.FreqDist(stopwords_removed)
+print("Most common non-stopwords:", freq.most_common(50))
+
+    freq = nltk.FreqDist(stopwords_removed): Creates a frequency distribution of the non-stopwords in the stopwords_removed list.
+
+    print("Most common non-stopwords:", freq.most_common(50)): Prints the 50 most common non-stopwords and their frequencies in the processed text.
+	
+	------------------------------------------------------------------------------------------
+	Certainly, let's break down the provided code line by line:
+
+python
+
+import pandas as pd
+from nltk.sentiment import SentimentIntensityAnalyzer
+
+    import pandas as pd: Imports the pandas library and aliases it as pd. Pandas is commonly used for data manipulation and analysis.
+
+    from nltk.sentiment import SentimentIntensityAnalyzer: Imports the SentimentIntensityAnalyzer class from the Natural Language Toolkit (nltk). This class provides a method for analyzing sentiment in text.
+
+python
+
+# Create a SentimentIntensityAnalyzer
+sid = SentimentIntensityAnalyzer()
+
+    sid = SentimentIntensityAnalyzer(): Instantiates a SentimentIntensityAnalyzer object named sid. This object is capable of analyzing sentiment in text using a pre-trained model.
+
+python
+
+# Analyze sentiment for each row in the 'tweet_column_name' column
+tweet_column_name = 'Tweet'  # Replace with the actual name of your tweet column
+df['sentimentP'] = df[tweet_column_name].apply(lambda x: sid.polarity_scores(x)['compound'])
+
+    tweet_column_name = 'Tweet': Assigns the name of the column containing tweet text to the variable tweet_column_name.
+
+    df['sentimentP'] = df[tweet_column_name].apply(lambda x: sid.polarity_scores(x)['compound']): Applies the sentiment analysis to each row in the specified tweet column. The lambda function calculates the compound sentiment score using the SentimentIntensityAnalyzer and stores the result in a new column named 'sentimentP'.
+
+python
+
+# Classify sentiment as positive, negative, or neutral
+df['sentiment_class'] = df['sentimentP'].apply(lambda x: 'positive' if x > 0 else ('negative' if x < 0 else 'neutral'))
+
+    df['sentiment_class'] = df['sentimentP'].apply(lambda x: 'positive' if x > 0 else ('negative' if x < 0 else 'neutral')): Classifies sentiment based on the compound score. If the score is greater than 0, it's classified as 'positive'. If the score is less than 0, it's classified as 'negative'. If the score is exactly 0, it's classified as 'neutral'. The result is stored in a new column named 'sentiment_class'.
+
+python
+
+# Display the results
+result_df = df[['Tweet', 'sentiment_class']]
+print(result_df)
+
+    result_df = df[['Tweet', 'sentiment_class']]: Creates a new DataFrame result_df containing only the 'Tweet' column and the newly created 'sentiment_class' column.
+
+    print(result_df): Prints the resulting DataFrame to the console, displaying the tweet text and corresponding sentiment classification.
+
+python
+
+# Save the DataFrame to a new CSV file
+existing_file_path = 'C:/Users/Anes/Downloads/s_sen.csv'  # Replace with the path to your existing CSV file
+df.to_csv(existing_file_path, index=False)
+
+    existing_file_path = 'C:/Users/Anes/Downloads/s_sen.csv': Specifies the path where the new CSV file will be saved.
+
+    df.to_csv(existing_file_path, index=False): Saves the entire DataFrame to a new CSV file at the specified path, excluding the index column from the CSV file.
+
+In summary, this code performs sentiment analysis on a DataFrame containing tweet text using the SentimentIntensityAnalyzer from nltk. It adds columns for the sentiment score and sentiment class, prints the results to the console, and saves the updated DataFrame to a new CSV file.
+
+-------------------------------------------------------------------------------------------
+
+import pandas as pd
+from nltk.sentiment import SentimentIntensityAnalyzer
+
+    import pandas as pd: Imports the pandas library and aliases it as pd. Pandas is commonly used for data manipulation and analysis.
+
+    from nltk.sentiment import SentimentIntensityAnalyzer: Imports the SentimentIntensityAnalyzer class from the Natural Language Toolkit (nltk). This class provides a method for analyzing sentiment in text.
+
+python
+
+# Create a SentimentIntensityAnalyzer
+sid = SentimentIntensityAnalyzer()
+
+    sid = SentimentIntensityAnalyzer(): Instantiates a SentimentIntensityAnalyzer object named sid. This object is capable of analyzing sentiment in text using the VADER sentiment analyzer.
+
+python
+
+# Analyze sentiment for each row in the 'tweet_column_name' column
+tweet_column_name = 'Tweet'  # Replace with the actual name of your tweet column
+df['sentimentP'] = df[tweet_column_name].apply(lambda x: sid.polarity_scores(x)['compound'])
+
+    tweet_column_name = 'Tweet': Assigns the name of the column containing tweet text to the variable tweet_column_name.
+
+    df['sentimentP'] = df[tweet_column_name].apply(lambda x: sid.polarity_scores(x)['compound']): Applies the VADER sentiment analysis to each row in the specified tweet column. The lambda function calculates the compound sentiment score using the SentimentIntensityAnalyzer and stores the result in a new column named 'sentimentP'.
+
+python
+
+# Classify sentiment as positive, negative, or neutral
+df['sentiment_class'] = df['sentimentP'].apply(lambda x: 'positive' if x > 0 else ('negative' if x < 0 else 'neutral'))
+
+    df['sentiment_class'] = df['sentimentP'].apply(lambda x: 'positive' if x > 0 else ('negative' if x < 0 else 'neutral')): Classifies sentiment based on the compound score. If the score is greater than 0, it's classified as 'positive'. If the score is less than 0, it's classified as 'negative'. If the score is exactly 0, it's classified as 'neutral'. The result is stored in a new column named 'sentiment_class'.
+
+python
+
+# Display NLTK VADER sentiment scores and actual sentiment labels
+result_df = df[['Tweet', 'sentimentP', 'sentiment_class']]
+print(result_df)
+
+    result_df = df[['Tweet', 'sentimentP', 'sentiment_class']]: Creates a new DataFrame result_df containing the 'Tweet' column, 'sentimentP' column (VADER sentiment scores), and 'sentiment_class' column (classified sentiment).
+
+    print(result_df): Prints the resulting DataFrame to the console, displaying the tweet text, VADER sentiment scores, and corresponding sentiment class labels.
+
+In summary, this code utilizes the VADER sentiment analyzer from nltk to analyze the sentiment of each tweet in a DataFrame. It adds columns for the sentiment score and sentiment class, prints the results to the console, and displays the tweet text along with VADER sentiment scores and sentiment class labels.
+
+
+--------------------------------------------------------------------------------------
+
+import pandas as pd
+import re
+from nltk.probability import FreqDist
+
+    import pandas as pd: Imports the pandas library and aliases it as pd. Pandas is commonly used for data manipulation and analysis.
+
+    import re: Imports the regular expression (regex) module. It is used for pattern matching and manipulation of strings.
+
+    from nltk.probability import FreqDist: Imports the FreqDist class from the Natural Language Toolkit (nltk). This class is used to represent frequency distributions of a set of samples.
+
+python
+
+# Assuming you have a CSV file named 'REF TWEETS.csv' with a 'Tweet' column
+file_path = 'C:/Users/Anes/Downloads/REF TWEETS.csv'  # Replace with the actual path to your CSV file
+df = pd.read_csv(file_path)
+
+    file_path = 'C:/Users/Anes/Downloads/REF TWEETS.csv': Specifies the path to the CSV file containing the data.
+
+    df = pd.read_csv(file_path): Reads the CSV file into a pandas DataFrame (df). The DataFrame is a tabular data structure commonly used in pandas.
+
+python
+
+# Extract 'Tweet' column to get all text in one string
+all_text = ' '.join(df['Tweet'].astype(str).tolist())
+
+    all_text = ' '.join(df['Tweet'].astype(str).tolist()): Combines all the text from the 'Tweet' column into a single string (all_text). The .astype(str).tolist() is used to convert the column to a list of strings.
+
+python
+
+# Use regular expression to find occurrences of #fifa and its variations
+fifa_variations = re.findall(r'#fifa\w*', all_text.lower())
+
+    fifa_variations = re.findall(r'#fifa\w*', all_text.lower()): Uses a regular expression to find all occurrences of the pattern #fifa followed by any word characters (\w*). This is case-insensitive as it converts all_text to lowercase.
+
+python
+
+# Calculate the frequency distribution of filtered words
+freq_dist = FreqDist(fifa_variations)
+
+    freq_dist = FreqDist(fifa_variations): Creates a frequency distribution of the filtered words (variations of #fifa) using the FreqDist class.
+
+python
+
+print(freq_dist)
+
+    print(freq_dist): Prints the frequency distribution, showing the occurrences of each variation of #fifa.
+
+python
+
+# Print the most common words
+print("Most common words related to #fifa:")
+print(freq_dist.most_common(20))  # Change 10 to the desired number of top words
+
+    print("Most common words related to #fifa:"): Prints a header indicating that the following output represents the most common words related to #fifa.
+
+    print(freq_dist.most_common(20)): Prints the 20 most common variations of #fifa and their frequencies. You can adjust the number 20 to display a different number of top words.
+
+python
+
+freq_dist.plot(50, cumulative=True)
+
+    freq_dist.plot(50, cumulative=True): Plots a cumulative frequency distribution of the top 50 variations of #fifa. This provides a visual representation of the cumulative frequencies of the words. You can adjust the number 50 to plot a different number of words.
+	
+	----------------------------------------------------------------------------------
+	
+	import pandas as pd
+from nltk import collocations
+
+    import pandas as pd: Imports the pandas library and aliases it as pd. Pandas is commonly used for data manipulation and analysis.
+
+    from nltk import collocations: Imports the collocations module from the Natural Language Toolkit (nltk). This module is used for finding word combinations (collocations) in text.
+
+python
+
+# Assuming your tweets are in the 'Tweet' column, replace it with your actual column name
+tweets = df['Tweet'].dropna().astype(str).str.lower().str.replace(r'\b\w\b', '').str.cat(sep=' ')
+
+    tweets = df['Tweet'].dropna().astype(str): Extracts the 'Tweet' column from the DataFrame (df), drops any missing values (NaN), and converts the column to a string data type.
+
+    .str.lower(): Converts all characters in the string to lowercase.
+
+    .str.replace(r'\b\w\b', ''): Uses a regular expression to remove single-character words (words consisting of only one letter).
+
+    .str.cat(sep=' '): Concatenates the processed strings into a single string, separating them with a space.
+
+python
+
+# Tokenize the tweets
+tokens = word_tokenize(tweets)
+
+    tokens = word_tokenize(tweets): Tokenizes the concatenated string (tweets) into a list of words using the word_tokenize function from nltk.
+
+python
+
+# Remove stop words
+stop_words = set(stopwords.words('english'))
+filtered_tokens = [word for word in tokens if word.isalnum() and word not in stop_words]
+
+    stop_words = set(stopwords.words('english')): Creates a set (stop_words) containing English stopwords.
+
+    filtered_tokens = [word for word in tokens if word.isalnum() and word not in stop_words]: Filters out non-alphanumeric words and stopwords from the list of tokens, storing the result in filtered_tokens.
+
+python
+
+# Find collocations
+bigram_measures = collocations.BigramAssocMeasures()
+finder = collocations.BigramCollocationFinder.from_words(filtered_tokens)
+collocations = finder.nbest(bigram_measures.pmi, 10)  # You can adjust the number of collocations you want to retrieve
+
+    bigram_measures = collocations.BigramAssocMeasures(): Creates an instance of BigramAssocMeasures which provides different association measures for bigrams.
+
+    finder = collocations.BigramCollocationFinder.from_words(filtered_tokens): Creates a bigram collocation finder from the filtered tokens.
+
+    collocations = finder.nbest(bigram_measures.pmi, 10): Retrieves the top 10 collocations based on their Pointwise Mutual Information (PMI) scores. You can adjust the number 10 to retrieve a different number of collocations.
+
+python
+
+print(collocations)
+
+    print(collocations): Prints the identified collocations to the console.
+	
+	-----------------------------------------------------------------------------------
+	
+	from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics import accuracy_score
+
+    from sklearn.model_selection import train_test_split: Imports the train_test_split function from the model_selection module in scikit-learn. This function is used to split the dataset into training and testing sets.
+
+    from sklearn.naive_bayes import MultinomialNB: Imports the MultinomialNB class from the naive_bayes module in scikit-learn. This class represents the Multinomial Naive Bayes classifier.
+
+    from sklearn.feature_extraction.text import CountVectorizer: Imports the CountVectorizer class from the feature_extraction.text module in scikit-learn. This class is used to convert a collection of text documents to a matrix of token counts.
+
+    from sklearn.metrics import accuracy_score: Imports the accuracy_score function from the metrics module in scikit-learn. This function is used to calculate the accuracy of a classification model.
+
+python
+
+# Tokenize the text
+tokens = word_tokenize(all_text)
+
+    tokens = word_tokenize(all_text): Tokenizes the combined text from the 'Tweet' column into a list of words using the word_tokenize function from nltk.
+
+python
+
+# Create a binary classification label: 1 if the tweet contains #fifa, 0 otherwise
+df['contains_fifa'] = df['Tweet'].str.contains(r'#fifa', case=False, na=False).astype(int)
+
+    df['contains_fifa']: Creates a new column 'contains_fifa' in the DataFrame df.
+
+    df['Tweet'].str.contains(r'#fifa', case=False, na=False): Checks if each tweet in the 'Tweet' column contains the pattern #fifa, regardless of case. It returns a boolean Series.
+
+    .astype(int): Converts the boolean values to integers, representing 1 if #fifa is present and 0 otherwise. This column will be used as the target variable for classification.
+
+python
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(df['Tweet'], df['contains_fifa'], test_size=0.2, random_state=42)
+
+    train_test_split(df['Tweet'], df['contains_fifa'], test_size=0.2, random_state=42): Splits the data into training and testing sets. X_train and X_test contain the tweet text, while y_train and y_test contain the corresponding labels (contains_fifa). The test set size is 20%, and random_state is set for reproducibility.
+
+python
+
+# Vectorize the text data
+vectorizer = CountVectorizer(stop_words=stopwords.words('english'))
+X_train_vectorized = vectorizer.fit_transform(X_train)
+X_test_vectorized = vectorizer.transform(X_test)
+
+    vectorizer = CountVectorizer(stop_words=stopwords.words('english')): Creates a CountVectorizer object with English stopwords removed.
+
+    X_train_vectorized = vectorizer.fit_transform(X_train): Fits and transforms the training text data into a document-term matrix.
+
+    X_test_vectorized = vectorizer.transform(X_test): Transforms the testing text data using the same vectorizer.
+
+python
+
+# Train a Naive Bayes classifier
+classifier = MultinomialNB()
+classifier.fit(X_train_vectorized, y_train)
+
+    classifier = MultinomialNB(): Creates an instance of the Multinomial Naive Bayes classifier.
+
+    classifier.fit(X_train_vectorized, y_train): Trains the classifier on the vectorized training data (X_train_vectorized) and corresponding labels (y_train).
+
+python
+
+# Make predictions on the test set
+predictions = classifier.predict(X_test_vectorized)
+
+    predictions = classifier.predict(X_test_vectorized): Uses the trained classifier to make predictions on the vectorized test data.
+
+python
+
+# Calculate and print accuracy
+accuracy = accuracy_score(y_test, predictions)
+print("Accuracy:", accuracy)
+
+    accuracy = accuracy_score(y_test, predictions): Calculates the accuracy by comparing the predicted labels (predictions) with the actual labels (y_test).
+
+    print("Accuracy:", accuracy): Prints the accuracy of the Naive Bayes classifier on the test set.
+
+------------------------------------------------------------------------------------
+
+import nltk
+from nltk import word_tokenize
+from nltk.probability import FreqDist
+import urllib.request
+from matplotlib import pyplot as plt
+from wordcloud import WordCloud
+nltk.download('punkt')
+
+    import nltk: Imports the Natural Language Toolkit (nltk), a powerful library for working with human language data.
+
+    from nltk import word_tokenize: Imports the word_tokenize function from nltk, which is used to tokenize text into words.
+
+    from nltk.probability import FreqDist: Imports the FreqDist class from nltk, used to represent frequency distributions of a set of samples.
+
+    import urllib.request: Imports the urllib module to handle URL-related operations.
+
+    from matplotlib import pyplot as plt: Imports the pyplot module from the matplotlib library for creating visualizations.
+
+    from wordcloud import WordCloud: Imports the WordCloud class from the wordcloud library, which is used for creating word clouds.
+
+    nltk.download('punkt'): Downloads the Punkt dataset, which is necessary for tokenization using the word_tokenize function.
+
+python
+
+# Assuming you have a CSV file named 'REF TWEETS.csv' with a 'Tweet' column
+file_path = 'C:/Users/Anes/Downloads/REF TWEETS.csv'  # Replace with the actual path to your CSV file
+df = pd.read_csv(file_path)
+
+    file_path = 'C:/Users/Anes/Downloads/REF TWEETS.csv': Specifies the path to the CSV file containing the data.
+
+    df = pd.read_csv(file_path): Reads the CSV file into a pandas DataFrame (df). The DataFrame is a tabular data structure commonly used in pandas.
+
+python
+
+# Extract 'Tweet' column to get all text in one string
+all_text = ' '.join(df['Tweet'].astype(str).tolist())
+
+    all_text = ' '.join(df['Tweet'].astype(str).tolist()): Combines all the text from the 'Tweet' column into a single string (all_text). The .astype(str).tolist() is used to convert the column to a list of strings.
+
+python
+
+# Use regular expression to find occurrences of #fifa and its variations
+fifa_variations = re.findall(r'#fifa\w*', all_text.lower())
+
+    fifa_variations = re.findall(r'#fifa\w*', all_text.lower()): Uses a regular expression to find all occurrences of the pattern #fifa followed by any word characters (\w*). This is case-insensitive as it converts all_text to lowercase.
+
+python
+
+# Calculate the frequency distribution of filtered words
+freq_dist = FreqDist(fifa_variations)
+
+    freq_dist = FreqDist(fifa_variations): Creates a frequency distribution of the filtered words (variations of #fifa) using the FreqDist class.
+
+python
+
+# Generate a word cloud
+wordcloud = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(freq_dist)
+
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(freq_dist): Creates a WordCloud object with specific width, height, and background color settings. It generates the word cloud from the frequency distribution.
+
+python
+
+# Plot the WordCloud image
+plt.figure(figsize=(10, 5))
+plt.imshow(wordcloud, interpolation='bilinear')
+plt.axis('off')
+plt.show()
+
+    plt.figure(figsize=(10, 5)): Sets the figure size for the WordCloud plot.
+
+    plt.imshow(wordcloud, interpolation='bilinear'): Displays the WordCloud image using bilinear interpolation for a smoother appearance.
+
+    plt.axis('off'): Removes the axis labels and ticks for better visualization.
+
+    plt.show(): Displays the WordCloud plot using the matplotlib library.
+	
+	------------------------------------------------------------------------------------
+	
+	This script processes a CSV file containing tweets, extracts the 'Tweet' column, finds occurrences of variations of the hashtag #fifa using regular expressions, and performs stemming using both the Porter and Lancaster stemmers. It then calculates the frequency distribution of the stemmed words and prints the most common words after stemming. Finally, it plots the frequency distribution of stemmed words using both stemmers.
+
+Let's break down the code line by line:
+
+python
+
+import pandas as pd
+import re
+from nltk.probability import FreqDist
+from nltk.stem import PorterStemmer, LancasterStemmer
+
+    Imports necessary libraries: pandas for data manipulation, re for regular expressions, FreqDist for frequency distribution, and PorterStemmer and LancasterStemmer from nltk.stem for stemming.
+
+python
+
+file_path = 'C:/Users/Anes/Downloads/REF TWEETS.csv'
+df = pd.read_csv(file_path)
+
+    Reads a CSV file ('REF TWEETS.csv') into a pandas DataFrame.
+
+python
+
+all_text = ' '.join(df['Tweet'].astype(str).tolist())
+
+    Concatenates all the text from the 'Tweet' column into a single string.
+
+python
+
+fifa_variations = re.findall(r'#fifa\w*', all_text.lower())
+
+    Uses a regular expression to find all occurrences of the pattern #fifa followed by any word characters (\w*). The result is stored in fifa_variations.
+
+python
+
+porter_stemmer = PorterStemmer()
+lancaster_stemmer = LancasterStemmer()
+
+    Initializes both Porter and Lancaster stemmers.
+
+python
+
+porter_stems = [porter_stemmer.stem(word) for word in fifa_variations]
+lancaster_stems = [lancaster_stemmer.stem(word) for word in fifa_variations]
+
+    Applies stemming to the words in fifa_variations using both Porter and Lancaster stemmers.
+
+python
+
+porter_freq_dist = FreqDist(porter_stems)
+lancaster_freq_dist = FreqDist(lancaster_stems)
+
+    Creates frequency distributions of the stemmed words using FreqDist.
+
+python
+
+print("Most common words related to #fifa (Porter Stemmer):")
+print(porter_freq_dist.most_common(20))
+
+print("\nMost common words related to #fifa (Lancaster Stemmer):")
+print(lancaster_freq_dist.most_common(20))
+
+    Prints the 20 most common words related to #fifa after stemming using both Porter and Lancaster stemmers.
+
+python
+
+porter_freq_dist.plot(50, cumulative=True, title="Porter Stemmer")
+lancaster_freq_dist.plot(50, cumulative=True, title="Lancaster Stemmer")
+
+    Plots the cumulative frequency distribution of the stemmed words using both Porter and Lancaster stemmers. The plots show the cumulative frequency of the top 50 words.
+
+---------------------------------------------------------------------------------
+
+This script performs text preprocessing on tweets from a CSV file named 'REF TWEETS.csv.' It includes tokenization, stopword removal, stemming using both Porter and Lancaster stemmers, and displays the most common words after stemming. Additionally, it prints the filtered text and plots the cumulative frequency distribution of stemmed words using both stemmers.
+
+Let's break down the code line by line:
+
+python
+
+import pandas as pd
+import re
+from nltk.probability import FreqDist
+from nltk.stem import PorterStemmer, LancasterStemmer
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+
+# Download NLTK stopwords if not already downloaded
+import nltk
+nltk.download('stopwords')
+
+    Imports necessary libraries: pandas for data manipulation, re for regular expressions, FreqDist for frequency distribution, PorterStemmer and LancasterStemmer from nltk.stem for stemming, word_tokenize for tokenization, and stopwords from nltk.corpus for stopwords.
+
+    Downloads NLTK stopwords if not already downloaded.
+
+python
+
+file_path = 'C:/Users/Anes/Downloads/REF TWEETS.csv'
+df = pd.read_csv(file_path)
+
+    Reads a CSV file ('REF TWEETS.csv') into a pandas DataFrame.
+
+python
+
+all_text = ' '.join(df['Tweet'].astype(str).tolist())
+
+    Concatenates all the text from the 'Tweet' column into a single string.
+
+python
+
+all_words = word_tokenize(all_text.lower())
+
+    Tokenizes the combined text into words, converting them to lowercase.
+
+python
+
+stop_words = set(stopwords.words('english'))
+filtered_words = [word for word in all_words if word.isalnum() and word not in stop_words]
+
+    Removes stopwords and non-alphanumeric characters from the list of words.
+
+python
+
+filtered_text = ' '.join(filtered_words)
+
+    Joins the filtered words into a single string.
+
+python
+
+porter_stemmer = PorterStemmer()
+lancaster_stemmer = LancasterStemmer()
+
+    Initializes both Porter and Lancaster stemmers.
+
+python
+
+porter_stems = [porter_stemmer.stem(word) for word in filtered_words]
+lancaster_stems = [lancaster_stemmer.stem(word) for word in filtered_words]
+
+    Applies stemming to the filtered words using both Porter and Lancaster stemmers.
+
+python
+
+print("Most common words in tweets (Porter Stemmer):")
+print(FreqDist(porter_stems).most_common(20))
+
+print("\nMost common words in tweets (Lancaster Stemmer):")
+print(FreqDist(lancaster_stems).most_common(20))
+
+    Prints the 20 most common words in tweets after stemming using both Porter and Lancaster stemmers.
+
+python
+
+print("\nFiltered Text:")
+print(filtered_text)
+
+    Prints the filtered text.
+
+python
+
+FreqDist(porter_stems).plot(50, cumulative=True, title="Porter Stemmer")
+FreqDist(lancaster_stems).plot(50, cumulative=True, title="Lancaster Stemmer")
+
+    Plots the cumulative frequency distribution of stemmed words using both Porter and Lancaster stemmers. The plots show the cumulative frequency of the top 50 words.
+	
+	---------------------------------------------------------------------------------
+	
+	Certainly! Let's break down the provided code line by line:
+
+python
+
+import pandas as pd
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+import re
+
+# Download NLTK stopwords and Punkt tokenizer if not already downloaded
+nltk.download("stopwords")
+nltk.download("punkt")
+
+    Import necessary libraries: pandas for data manipulation, nltk for natural language processing, and regular expressions.
+
+    Download NLTK stopwords and Punkt tokenizer if they are not already downloaded.
+
+python
+
+# Read CSV file
+file_path = 'C:/Users/Anes/Downloads/REF TWEETS.csv'
+df = pd.read_csv(file_path)
+
+    Read a CSV file ('REF TWEETS.csv') into a pandas DataFrame.
+
+python
+
+# Combine all text in the 'column_name' column (replace 'column_name' with the actual column name containing your text)
+all_text = ' '.join(df['Tweet'].astype(str).tolist())
+
+    Concatenate all the text from the 'Tweet' column into a single string.
+
+python
+
+# Define regular expression patterns for filtering
+pattern = re.compile(r'\b(?:{})\b'.format('|'.join(stopwords.words('english'))), flags=re.IGNORECASE)
+whitespace_pattern = re.compile(r'\s+')
+exclamation_hash_pattern = re.compile(r'[!#]')
+
+    Define regular expression patterns for filtering stopwords, whitespaces, exclamation marks, and hashes.
+
+python
+
+# Remove stopwords, whitespaces, exclamation marks, and hashes; convert to lowercase
+filtered_text = re.sub(pattern, '', all_text)
+filtered_text = re.sub(whitespace_pattern, ' ', filtered_text)
+filtered_text = re.sub(exclamation_hash_pattern, '', filtered_text)
+filtered_text = filtered_text.lower()
+
+    Apply the defined patterns to remove stopwords, whitespaces, exclamation marks, and hashes, and convert the text to lowercase.
+
+python
+
+# Tokenize the filtered text into words
+words = word_tokenize(filtered_text)
+
+    Tokenize the filtered text into words using the Punkt tokenizer.
+
+python
+
+print("Original words count:", len(word_tokenize(all_text)))
+print("Filtered words count:", len(words))
+
+    Print the word counts of the original and filtered text.
+
+python
+
+print("Original text:", all_text[:1000])  # Displaying the first 1000 characters of the original text
+print("\nFiltered text:", filtered_text[:1000])  # Displaying the first 1000 characters of the filtered text
+
+    Print the first 1000 characters of the original and filtered text for comparison.
+
+
+# Define regular expression patterns for filtering
+pattern = re.compile(r'\b(?:{})\b'.format('|'.join(stopwords.words('english'))), flags=re.IGNORECASE)
+whitespace_pattern = re.compile(r'\s+')
+exclamation_hash_pattern = re.compile(r'[!#]')
+
+Let's break down each part:
+
+    Stopwords Pattern (pattern):
+        stopwords.words('english'): Retrieves a list of English stopwords from NLTK.
+        '|'.join(stopwords.words('english')): Joins the stopwords into a single string with '|' as the delimiter.
+        r'\b(?:{})\b'.format('|'.join(stopwords.words('english'))): Constructs a regular expression pattern that matches whole words (bounded by word boundaries \b) of any of the English stopwords. The ?: inside the parentheses is a non-capturing group, and re.IGNORECASE makes the pattern case-insensitive.
+
+    Whitespace Pattern (whitespace_pattern):
+        r'\s+': Matches one or more whitespace characters. This pattern is used to identify and replace multiple consecutive whitespaces with a single space.
+
+    Exclamation and Hash Pattern (exclamation_hash_pattern):
+        r'[!#]': Matches either '!' or '#' character. This pattern is used to identify and remove exclamation marks and hash symbols from the text.
+
+These patterns will be applied in the subsequent code to filter out stopwords, whitespaces, exclamation marks, and hash symbols from the text.
+----------------------------------------------------------------
+
+
+Certainly! Let's analyze the provided code line by line:
+
+python
+
+import pandas as pd
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+import re
+
+# Download NLTK stopwords and Punkt tokenizer if not already downloaded
+nltk.download("stopwords")
+nltk.download("punkt")
+
+    Import necessary libraries: pandas for data manipulation, nltk for natural language processing, and regular expressions.
+
+    Download NLTK stopwords and Punkt tokenizer if they are not already downloaded.
+
+python
+
+# Read CSV file
+file_path = 'C:/Users/Anes/Downloads/REF TWEETS.csv'
+df = pd.read_csv(file_path)
+
+    Read a CSV file ('REF TWEETS.csv') into a pandas DataFrame.
+
+python
+
+# Combine all text in the 'column_name' column (replace 'column_name' with the actual column name containing your text)
+all_text = ' '.join(df['Tweet'].astype(str).tolist())
+
+    Concatenate all the text from the 'Tweet' column into a single string.
+
+python
+
+# Define regular expression patterns for filtering
+stopwords_pattern = re.compile(r'\b(?:{})\b'.format('|'.join(stopwords.words('english'))), flags=re.IGNORECASE)
+punctuation_pattern = re.compile(r'[,.:"\'!?]')  # Add any additional punctuation marks you want to filter out
+emoji_pattern = re.compile("[..."
+
+    Define regular expression patterns for filtering stopwords, punctuation marks, and emojis.
+        stopwords_pattern: Matches whole words (bounded by word boundaries \b) of English stopwords. It's case-insensitive.
+        punctuation_pattern: Matches common punctuation marks. You can customize it by adding or removing characters inside the square brackets.
+        emoji_pattern: Matches Unicode characters representing emojis.
+
+python
+
+# Remove stopwords, punctuation, and emojis; convert to lowercase
+filtered_text = re.sub(stopwords_pattern, '', all_text)
+filtered_text = re.sub(punctuation_pattern, '', filtered_text)
+filtered_text = re.sub(emoji_pattern, '', filtered_text)
+filtered_text = filtered_text.lower()
+
+    Apply the defined patterns to remove stopwords, punctuation marks, and emojis, and convert the text to lowercase.
+
+python
+
+# Tokenize the filtered text into words
+words = word_tokenize(filtered_text)
+
+    Tokenize the filtered text into words using the Punkt tokenizer.
+
+python
+
+print("Original words count:", len(word_tokenize(all_text)))
+print("Filtered words count:", len(words))
+
+    Print the word counts of the original and filtered text.
+
+python
+
+print("Original text:", all_text[:1000])  # Displaying the first 1000 characters of the original text
+print("\nFiltered text:", filtered_text[:1000])  # Displaying the first 1000 characters of the filtered text
+
+    Print the first 1000 characters of the original and filtered text for comparison.
+
+# Define regular expression patterns for filtering
+stopwords_pattern = re.compile(r'\b(?:{})\b'.format('|'.join(stopwords.words('english'))), flags=re.IGNORECASE)
+punctuation_pattern = re.compile(r'[,.:"\'!?]')  # Add any additional punctuation marks you want to filter out
+emoji_pattern = re.compile("[..."
+    Stopwords Pattern (stopwords_pattern):
+        stopwords.words('english'): Retrieves a list of English stopwords from the NLTK library.
+        '|'.join(stopwords.words('english')): Joins the stopwords into a single string with | (pipe) as the delimiter.
+        r'\b(?:{})\b'.format('|'.join(stopwords.words('english'))): Constructs a regular expression pattern.
+            \b: Asserts a word boundary.
+            (?:{}): Non-capturing group for the entire stopwords list.
+            \b: Asserts another word boundary.
+            flags=re.IGNORECASE: Makes the pattern case-insensitive.
+
+    So, the stopwords_pattern matches whole words (bounded by word boundaries) of English stopwords in a case-insensitive manner.
+
+    Punctuation Pattern (punctuation_pattern):
+        r'[,.:"\'!?]': Defines a character class that matches any of the specified punctuation marks.
+            ,: Comma
+            .: Period
+            :: Colon
+            ": Double quotation mark
+            ': Single quotation mark
+            !: Exclamation mark
+            ?: Question mark
+
+    You can customize this pattern by adding or removing characters inside the square brackets according to the punctuation marks you want to filter out.
+
+    Emoji Pattern (emoji_pattern):
+        The code snippet provided is truncated, but it appears to be a regular expression pattern for matching emojis.
+        The ellipsis (...) indicates that there's more code for this pattern, but it's not shown in the provided snippet.
+        The general structure looks like re.compile("[..."), where the ellipsis should be replaced with the actual regular expression for matching emojis.
+
+    The pattern is designed to match a variety of Unicode characters representing emojis across different categories.
+
+These patterns will be later used to filter out stopwords, punctuation marks, and emojis from the text in the subsequent part of the code.
+
+-------------------------------------------------------------------------------------
+
+
+Certainly! Let's go through the code line by line and explain each part:
+
+python
+
+import pandas as pd
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.probability import FreqDist
+from matplotlib import pyplot as plt
+from wordcloud import WordCloud
+
+nltk.download('punkt')
+
+    Import Libraries:
+        import pandas as pd: Imports the pandas library and aliases it as pd.
+        import nltk: Imports the Natural Language Toolkit (nltk) library for natural language processing.
+        from nltk.tokenize import word_tokenize: Imports the word_tokenize function from nltk, which tokenizes text into words.
+        from nltk.probability import FreqDist: Imports the FreqDist class from nltk, used to calculate the frequency distribution of words.
+        from matplotlib import pyplot as plt: Imports the pyplot module from matplotlib for plotting.
+        from wordcloud import WordCloud: Imports the WordCloud class from the wordcloud library for creating word clouds.
+
+python
+
+nltk.download('punkt')
+
+    Download NLTK Punkt Tokenizer Data:
+        nltk.download('punkt'): Downloads the necessary data for the Punkt tokenizer, which is used for tokenization in nltk.
+
+python
+
+file_path = 'C:/Users/Anes/Downloads/REF TWEETS.csv'  # Replace with the actual path to your CSV file
+df = pd.read_csv(file_path)
+
+    Read CSV File:
+        file_path: Specifies the path to the CSV file containing tweet data.
+        df = pd.read_csv(file_path): Reads the CSV file into a pandas DataFrame named df.
+
+python
+
+all_text = ' '.join(df['Tweet'].astype(str).tolist())
+
+    Combine Text:
+        df['Tweet'].astype(str).tolist(): Converts the 'Tweet' column to a list of strings.
+        ' '.join(...): Joins the list of strings into a single string, all_text, separated by spaces.
+
+python
+
+words = word_tokenize(all_text.lower())
+
+    Tokenize Text:
+        word_tokenize(all_text.lower()): Tokenizes the lowercased all_text into individual words.
+
+python
+
+freq_dist = FreqDist(words)
+
+    Calculate Frequency Distribution:
+        FreqDist(words): Creates a frequency distribution of the words.
+
+python
+
+wordcloud = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(freq_dist)
+
+    Generate Word Cloud:
+        WordCloud(...): Initializes a WordCloud object with specific parameters.
+        .generate_from_frequencies(freq_dist): Generates the word cloud from the calculated frequency distribution.
+
+python
+
+plt.figure(figsize=(10, 5))
+plt.imshow(wordcloud, interpolation='bilinear')
+plt.axis('off')
+plt.show()
+
+    Plot Word Cloud:
+        plt.figure(figsize=(10, 5)): Sets the size of the figure for plotting.
+        plt.imshow(wordcloud, interpolation='bilinear'): Displays the word cloud image with bilinear interpolation.
+        plt.axis('off'): Turns off the axis labels.
+        plt.show(): Displays the plot.
