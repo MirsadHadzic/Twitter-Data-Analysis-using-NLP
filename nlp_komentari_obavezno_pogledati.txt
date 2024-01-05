@@ -1,0 +1,4 @@
+Komentar uz objasnjenje: REF TWEETS.csv je moj glavni, originalni .csv file koji ja koristim za projekat. 
+			 s_sen.csv je .csv file u koji ja smjestam svoju sentiment analizu odradjenu kroz projekat. 
+			 Glavni .csv file ima svoj sentiment, medjutim za projekat sam ja napravio svoju sentiment analizu.
+			 U projektu je napravljena usporedba izmedju ova dva sentiment-a.
