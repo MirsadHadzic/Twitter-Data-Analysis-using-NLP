@@ -1,0 +1,8 @@
+    How accurately can sentiment analysis identify positive, negative, or neutral sentiments in tweets related to the FIFA World Cup?
+        Sentiment analysis demonstrates a high accuracy rate, achieving an impressive score of 91.13%. The analysis involves classifying tweets as either containing or not containing the hashtag #fifa, providing valuable insights into the sentiment distribution within the dataset.
+
+    What impact do common text processing techniques like removing stopwords and stemming have on sentiment analysis results?
+        Text processing techniques play a crucial role in enhancing sentiment analysis results. Removing stopwords, common words with little semantic value, and applying stemming significantly refine the dataset. This process not only reduces noise but also contributes to more accurate sentiment classification.
+
+    How does sentiment analysis performance vary when considering different combinations of text processing techniques, including the inclusion/exclusion of stopwords and the choice of stemming method?
+        The performance of sentiment analysis exhibits variations based on different combinations of text processing techniques. The inclusion or exclusion of stopwords, as well as the choice between stemming methods like Porter and Lancaster, can impact the accuracy of sentiment classification. Experimenting with these variations provides a comprehensive understanding of their influence on sentiment analysis outcomes.

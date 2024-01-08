@@ -1,0 +1,233 @@
+Komentari za assignment 11 i 12 za NLP: import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.ensemble import RandomForestClassifier
+
+# Load your training dataset
+train_df = pd.read_csv('C:/Users/Anes/Downloads/labeledTrainData.csv', encoding='utf-8')
+
+# Assuming your training dataset has columns 'review' for text and 'sentiment' for labels
+X_train = train_df['review']
+y_train = train_df['sentiment']
+
+# Create and fit a TfidfVectorizer
+vectorizer = TfidfVectorizer()
+X_train_tfidf = vectorizer.fit_transform(X_train)
+
+# Train a Random Forest classifier
+forest = RandomForestClassifier(n_estimators=100, random_state=42)
+forest.fit(X_train_tfidf, y_train)
+
+# Load the test dataset
+test_df = pd.read_csv('C:/Users/Anes/Downloads/testData(1).csv', encoding='utf-8')
+
+# Assuming the test dataset has a column 'review' containing the reviews
+test_reviews = test_df['review']
+
+# Clean the text data (remove non-UTF-8 characters)
+test_reviews = test_reviews.apply(lambda x: x.encode('utf-8', 'ignore').decode('utf-8'))
+
+# Use the same vectorizer used during training to transform the test data
+test_tfidf = vectorizer.transform(test_reviews)
+
+# Use the trained model to predict sentiment labels for the test data
+predictions = forest.predict(test_tfidf)
+
+# Create a DataFrame with IDs and predicted labels
+output_df = pd.DataFrame({'id': test_df['id'], 'Predicted_Sentiment': predictions})
+
+# Save the DataFrame to a CSV file
+output_df.to_csv('predictions.csv', index=False)
+
+
+Certainly, let's break down the code line by line with detailed explanations:
+
+python
+
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.ensemble import RandomForestClassifier
+
+Here, we import the necessary libraries. pandas is used for data manipulation, and TfidfVectorizer and RandomForestClassifier are from scikit-learn for feature extraction and machine learning, respectively.
+
+python
+
+train_df = pd.read_csv('C:/Users/Anes/Downloads/labeledTrainData.csv', encoding='utf-8')
+
+This line reads the training dataset (assumed to be in CSV format) into a Pandas DataFrame. The encoding='utf-8' is specified to handle UTF-8 encoded characters.
+
+python
+
+X_train = train_df['review']
+y_train = train_df['sentiment']
+
+We extract the 'review' column as the feature (X_train) and the 'sentiment' column as the target variable (y_train).
+
+python
+
+vectorizer = TfidfVectorizer()
+X_train_tfidf = vectorizer.fit_transform(X_train)
+
+We create a TF-IDF vectorizer to convert the raw text data into numerical features. fit_transform performs both fitting the vectorizer on the training data (X_train) and transforming the text data into TF-IDF features.
+
+python
+
+forest = RandomForestClassifier(n_estimators=100, random_state=42)
+forest.fit(X_train_tfidf, y_train)
+
+We create a Random Forest classifier with 100 trees (n_estimators=100) and fit it to the TF-IDF features (X_train_tfidf) and the corresponding labels (y_train).
+
+python
+
+test_df = pd.read_csv('C:/Users/Anes/Downloads/testData(1).csv', encoding='utf-8')
+
+We load the test dataset (assumed to be in CSV format) into a Pandas DataFrame.
+
+python
+
+test_reviews = test_df['review']
+test_reviews = test_reviews.apply(lambda x: x.encode('utf-8', 'ignore').decode('utf-8'))
+
+We extract the 'review' column from the test dataset. The apply function is used to clean the text data by removing non-UTF-8 characters.
+
+python
+
+test_tfidf = vectorizer.transform(test_reviews)
+
+We use the same vectorizer used during training to transform the test data into TF-IDF features.
+
+python
+
+predictions = forest.predict(test_tfidf)
+
+We use the trained Random Forest model to predict sentiment labels for the test data.
+
+python
+
+output_df = pd.DataFrame({'id': test_df['id'], 'Predicted_Sentiment': predictions})
+
+We create a new DataFrame (output_df) containing the 'id' column from the test dataset and the predicted sentiment labels.
+
+python
+
+output_df.to_csv('predictions.csv', index=False)
+
+Finally, we save the DataFrame with the predicted labels and IDs to a CSV file named 'predictions.csv'. The index=False parameter ensures that the index column is not included in the CSV file.
+
+This code essentially performs the tasks of reading, preprocessing, training a model, making predictions, and saving the results. If you have further questions or need clarifications on specific parts, feel free to ask!
+
+----------------------------------------------------------------------------------------------------
+
+import nltk
+from nltk.corpus import reuters
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score
+import numpy as np
+
+# Download the Reuters corpus
+nltk.download('reuters')
+
+# Construct a list of documents labeled with appropriate categories
+documents = [(list(reuters.words(fileid)), category) for fileid, category in reuters.fileids(categories=None, tagged=True)]
+
+# Define a feature extractor for documents (using TF-IDF)
+def document_features(document, vocabulary):
+    document_words = set(document)
+    features = {}
+    for word in vocabulary:
+        features[f"contains({word})"] = (word in document_words)
+    return features
+
+# Extract document features and labels
+all_words = nltk.FreqDist(w.lower() for w in reuters.words())
+word_features = list(all_words.keys())[:2000]  # Use top 2000 words as features
+featuresets = [(document_features(doc, word_features), category) for (doc, category) in documents]
+
+# Split the data into training and testing sets
+train_set, test_set = train_test_split(featuresets, test_size=0.2, random_state=42)
+
+# Train a Naive Bayes classifier
+classifier = nltk.NaiveBayesClassifier.train(train_set)
+
+# Compute accuracy on the test set
+accuracy = accuracy_score([category for (features, category) in test_set], classifier.classify_many([features for (features, category) in test_set]))
+print(f"Classifier Accuracy: {accuracy:.2%}")
+
+# Find out which features the classifier found to be most informative
+classifier.show_most_informative_features(10)
+
+Certainly, let's break down the code line by line:
+
+python
+
+import nltk
+from nltk.corpus import reuters
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score
+
+Here, we import the necessary libraries. nltk is for natural language processing, and scikit-learn (sklearn) is for machine learning.
+
+python
+
+nltk.download('reuters')
+
+This line downloads the Reuters corpus if you haven't already. The Reuters corpus is a collection of news documents categorized into various topics.
+
+python
+
+documents = [(reuters.words(fileid), reuters.categories(fileid)[0]) for fileid in reuters.fileids()]
+
+We construct a list of documents. For each document, we use reuters.words(fileid) to get the words in the document and reuters.categories(fileid)[0] to get the primary category associated with the document. This resolves the "too many values to unpack" issue.
+
+python
+
+def document_features(document, vocabulary):
+    document_words = set(document)
+    features = {}
+    for word in vocabulary:
+        features[f"contains({word})"] = (word in document_words)
+    return features
+
+We define a feature extractor function, document_features, which takes a document and a vocabulary of words as input. It creates a set of words present in the document and creates a dictionary of features indicating whether each word in the vocabulary is present in the document.
+
+python
+
+all_words = nltk.FreqDist(w.lower() for w in reuters.words())
+word_features = list(all_words.keys())[:2000]
+
+We create a frequency distribution of all words in the Reuters corpus and select the top 2000 words as features. These words will be used as the vocabulary for our feature extractor.
+
+python
+
+featuresets = [(document_features(doc, word_features), category) for (doc, category) in documents]
+
+We apply the document_features function to each document in the documents list, creating a list of feature sets. Each feature set is a tuple containing the features (indicating the presence or absence of words from the vocabulary) and the corresponding category.
+
+python
+
+train_set, test_set = train_test_split(featuresets, test_size=0.2, random_state=42)
+
+We split the data into training and testing sets using scikit-learn's train_test_split function.
+
+python
+
+classifier = nltk.NaiveBayesClassifier.train(train_set)
+
+We train a Naive Bayes classifier using the training set.
+
+python
+
+accuracy = accuracy_score([category for (features, category) in test_set], classifier.classify_many([features for (features, category) in test_set]))
+print(f"Classifier Accuracy: {accuracy:.2%}")
+
+We compute the accuracy of the classifier on the test set using scikit-learn's accuracy_score function.
+
+python
+
+classifier.show_most_informative_features(10)
+
+Finally, we display the most informative features according to the trained classifier using the show_most_informative_features method. The number 10 in the argument specifies the top 10 most informative features.
+
